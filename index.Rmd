@@ -1,0 +1,260 @@
+---
+title: "Estadística"
+subtitle: "Subindexado de datos y graficas"
+author: "Julio César Ramírez Pacheco"
+date: "03/09/2020"
+output:
+  rmdformats::material:
+    highlight: kate
+    cards: false
+---
+
+
+```{r knitr_init, echo=FALSE, cache=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+```
+
+# Subindexado de vectores atómicos
+
+El subindexado de vectores atómicos permite obtener partes de un vector atómico (los primeros elementos, los 10 últimos, etc.) y es útil en muchos tipos de análisis que suceden en diversas ramas de la ciencia. Supongamos que  tenemos lo siguiente:
+
+```{r pressure, eval=TRUE}
+dnormales <- rnorm(20)    # 10 numeros aleatorios de una dist. normal
+dnormales   # Imprimimos el vector
+
+```
+
+## Ejercicios:
+1.- ¿Cuál es el resultado de `dnormales[order(x)]`, `dnormales[1:length(vec)]`, `dnormales[-20]`, `dnormales[vec>0.5]`?
+
+2.- ¿Qué sucede si hacemos `dnormales[0:3]`? ¿Cuál es la longitud del vector?
+
+3.- Ahora suponga que `x <- c(1,24,8)` y `uno <- c(T,T,F)`. ¿Qué sucede si hacemos `x[uno]`? ¿Y si hacemos `x[as.double(uno)]`?
+
+
+#### Nota {.bs-callout .bs-callout-orange}
+
+>Puede referirse a las 
+<a href="https://monoxide2000.github.io/slidesUQroo2" alt= "Enlace para slides" target="_blank">diapositivas</a>
+
+
+
+
+# Subindexado de listas
+
+Las listas se pueden subindexar mediante los operadores `[`, `[[` y `$`. Recordemos que cuando indexamos con `[`, el resultado siempre es del mismo tipo. Ahora suponga que tenemos la siguiente lista:
+
+```{r, eval= TRUE}
+listaPrueba <- list(Mayusculas = LETTERS[1:15], Ciudades = c("Cancun", "Playa", "Chetumal", "Merida"), casos = list(a=23, b= 1:8, c=list(d=1,e=TRUE)))
+str(listaPrueba)
+```
+
+Ejercicios (en base al objeto `listaPrueba`),
+
+1.- ¿Con qué comando puedo obtener la lista casos?
+
+2.- ¿Cómo puedo obtener el único  valor lógico de `listaPrueba`?
+
+3.- ¿Qué sucede si hago `listaPrueba[[3]]$c[[2]]`, es esto equivalente a 
+`listaPrueba$casos[[3]][[2]]`? Explique
+
+4.- ¿Cuál es la diferencia entre `listaPrueba[1]` y `listaPrueba[[1]]`?
+
+5.- ¿Cómo puedo obtener el objeto `"Chetumal"`?
+
+6.- ¿Cómo puedo obtener el tercer elemento de `b`?
+
+
+# Indexado de matrices
+
+
+Suponga que tenemos la matriz:
+
+```{r, eval=TRUE}
+matriz1 <- matrix(rnorm(20), nrow=5)
+dim(matriz1)
+```
+
+## Ejercicios:
+
+A partir de `matriz1`, hallar:
+
+1.- La matriz que consta de las primeras dos columnas de `matriz1`.
+
+2.- La matriz que consta de las primeras dos filas y dos columnas de `matriz1`.
+
+3.- La matriz que consta del elemento $a_{2,3}$ de `matriz1`
+
+4.- ¿Son equivalentes los comandos `matriz1[c(1,2),c(3,4)]` y `matriz1[1:2,c(3,4)]`? (tip: puede probar con el comando `identical`)
+
+
+
+# Subindexado de `data.frame`
+
+El subindexado de `data.frames` es similar al subindexado por medio de listas y matrices. En este caso nos concentraremos en el paquete `dplyr` que permite manipular `data.frames`. Cualquier paquete en `R` se puede instalar mediante el comando `install.packages(<nombre.paquete>)`, por ejemplo para instalar `dplyr` hacemos:
+
+```{r, eval=FALSE}
+install.packages("dplyr", dependencies = TRUE)   # instalo el paquete
+library(dplyr)         # Cargo el paquete para trabajar con sus funciones
+
+```
+
+## Tarea:
+
+
+1.- Investigar para qué sirve el paquete `dplyr`.
+
+2.- ¿Cuáles son los comandos importantes del paquete `dplyr`?
+
+3.- Supongamos que tenemos un `data.frame` `df <- data.frame(a=1:8, letras =letter[1:8])`, qué sucede si aplico `select(df, a)`. ¿Y si aplico `filter(df, a<5)`?
+
+
+# Gráficos de funciones bidimensionales
+
+Los gráficos permiten mostrar múltiples características de una función. Los máximos, mínimos, etc., son métricas que nos dicen mucho acerca del comportamiento de una función. `R` nos permite graficar funciones de manera sencilla utilizando el concepto de vector. Por ejemplo, quizás estemos interesados en conocer la forma de onda de la función seno acotada, la cual se define matemáticamente mediante la siguiente fórmula:
+
+$$
+f(t) = \begin{cases}
+\sin(2 \pi t) & \mbox{para} -1 < t < 1\\
+0 & \mbox{resto}.
+\end{cases}
+$$
+Y la cual en `R` se graficar? de la siguiente manera:
+
+```{r eval=TRUE}
+
+t  <- seq(-1, 1, length=100)
+ft   <- sin(2*pi*t)           # Se calcula la funcion seno a partir de t
+plot(t, ft, type="l", xlim=c(-4,4), ylim=c(-1.5,1.5), main="Funcion seno", xlab="tiempo", ylab="Valores")
+grid()
+
+```
+
+`R` permite añadir gráficos o puntos mediante las funciones `lines()` y `points()`. El siguiente código ejemplifica lo anterior.
+
+```{r eval=T}
+t  <- seq(-3,3, length=200)
+f1 <- sin(2*pi*(t))
+f2 <- sin(2*pi*(t-1/4))
+f3 <- sin(2*pi*(t-1/2))
+plot(t,f1, type= "l", main="Funcion seno y versiones", xlab="tiempo", ylab="Valores")
+grid()
+lines(t,f2, col="red")
+points(t,f3,col="blue")
+
+
+```
+
+De igual manera se pueden definir funciones por tramos con el comando `ifelse()`, por ejemplo grafiquemos la siguiente función:
+
+$$
+f(t) = \begin{cases}
+2+t & \; -2<t<-1\\
+1   & \; -1<t<1\\
+2-t & \;1<t<2\\
+0  & \; \mbox{resto}
+\end{cases}
+$$
+
+```{r eval=T}
+t <- seq(-3,3, length=100)
+ft <- ifelse(t> -2 & t < -1, 2+t, ifelse(t>= -1 & t <= 1, 1, ifelse(t>1 & t< 2, 2-t, 0)))
+plot(t, ft, type = "l", main="Funcion por tramos", xlab="tiempo", ylab="Valores")
+grid()
+```
+
+### Ejercicios:
+
+
+Graficar las siguientes funciones:
+
+$$
+f(t) = \begin{cases}
+1 & \; t>0\\
+0 & \; \mbox{resto}
+\end{cases}
+$$
+
+$$
+f(t) = \begin{cases}
+1+t & \; -1<t<0\\
+1-t & \; 0 \le t<1\\
+0 & \; \mbox{resto}
+\end{cases}
+$$
+
+$$
+f(t) = \begin{cases}
+\mbox{e}^{-2t} & \; 0<t<2\\
+1+t & \;  -1<t<0\\
+0 & \; \mbox{resto}
+\end{cases}
+$$
+
+# Gráficos 3D
+
+Los gráficos en 3D permiten visualizar funciones del tipo:  $f(x,y)$, donde $x$ e $y$ representan variables independientes. Como ejemplo veamos la forma en la cual `R` grafica la siguiente función $f(x,y) = \sqrt{16-4x^2-y^2}$:
+
+
+```{r eval=T}
+x <- seq(-2,2,length=50)
+y <- seq(-4,4, length=50)
+z <- outer(x,y,function(x,y) sqrt(16-4*x^2-y^2))
+z[is.na(z)] <- 0
+persp(x,y,z, theta=-30, expand=0.5,ticktype = "detailed")
+persp(x,y,z, theta=30, expand=0.5, ticktype = "detailed")
+image(x,y,z)
+contour(x,y,z, add=TRUE)
+
+```
+
+Ejemplos: Ahora veamos la manera de hacerla con mis funciones.
+
+#### Ahora para la función $z = y^2-x^2$
+
+
+```{r eval=T}
+x <- seq(-3,3,length=50)
+y <- seq(-3,3, length=50)
+z <- outer(x,y,function(x,y) y^2-x^2)
+persp(x,y,z, theta=-30, expand=0.6, ticktype = "detailed")
+persp(x,y,z, theta=30, expand=0.6, ticktype = "detailed")
+image(x,y,z)
+contour(x,y,z, add=TRUE)
+
+```
+
+
+#### Ahora para la función $f(x,y)= (2+x^2-y^2) \mbox{e}^{1-x^2-(y^2)/4}$
+
+
+```{r eval=T}
+x <- seq(-3,3,length=50)
+y <- seq(-3,3, length=50)
+z <- outer(x,y,function(x,y) (2-y^2+x^2)*exp(1-x^2-(y^2)/4))
+persp(x,y,z, theta=-30, expand=0.5, ticktype = "detailed")
+persp(x,y,z, theta=30,expand=0.5,ticktype = "detailed")
+image(x,y,z)
+contour(x,y,z, add=TRUE)
+
+
+```
+
+#### Ejercicios:
+
+
+![Ejercicios para graficar superficies y contornos en R.](ejercicios.png)
+
+
